@@ -5,29 +5,55 @@
 //  Created by Mathtender on 4.08.21.
 //
 
-class MainNavigationController: UINavigationController, UINavigationControllerDelegate {
+class MainNavigationController: UINavigationController {
 
     // MARK: - Properties
 
-    // Making notification name static so we could add an observer for it
-    static let viewControllersChangedNotificationName = NSNotification.Name("MainNavigationControllerDidShowViewControllerNotification")
+    static let viewControllersChangedNotificationName = NSNotification.Name("MainNavigationControllerViewControllersChanged")
 
-    // MARK: - Life cycle
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        delegate = self
+    override var viewControllers: [UIViewController] {
+        didSet { postControllersChangedNotificaiton(viewControllers) }
     }
 
-    // MARK: - UINavigationControllerDelegate methods
+    // MARK: - Notificaiton
 
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        let notificationInfo = ["viewControllers": viewControllers]
-
-        // Posting notification with current array of `viewControllers` so we could track the changes
+    private func postControllersChangedNotificaiton(_ viewControllers: [UIViewController]) {
         NavigationCenter.sh.navigationNotificationCenter.post(
             name: MainNavigationController.viewControllersChangedNotificationName,
             object: self,
-            userInfo: notificationInfo)
+            userInfo: ["viewControllers": viewControllers])
+    }
+
+    // MARK: - Navigation
+
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        postControllersChangedNotificaiton(viewControllers + [viewController])
+        super.pushViewController(viewController, animated: animated)
+    }
+
+    @discardableResult
+    override func popViewController(animated: Bool) -> UIViewController? {
+        let viewController = super.popViewController(animated: animated)
+        postControllersChangedNotificaiton(viewControllers)
+        return viewController
+    }
+
+    @discardableResult
+    override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
+        let poppedViewControllers = super.popToViewController(viewController, animated: animated)
+        postControllersChangedNotificaiton(viewControllers)
+        return poppedViewControllers
+    }
+
+    @discardableResult
+    override func popToRootViewController(animated: Bool) -> [UIViewController]? {
+        let poppedViewControllers = super.popToRootViewController(animated: animated)
+        postControllersChangedNotificaiton(viewControllers)
+        return poppedViewControllers
+    }
+
+    override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
+        postControllersChangedNotificaiton(viewControllers)
+        super.setViewControllers(viewControllers, animated: animated)
     }
 }
