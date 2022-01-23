@@ -5,7 +5,7 @@ When we have an architecture which uses some kind of a router we can face a prob
 
 General idea is save `weak` link on a controller(`anchorController`) that was in the stack before entering the flow, observe changes in `viewControllers` array in `UINavigationController` and then check wheather `anchorController` is `nil` or is equal to `viewControllers.last`, if so it means user has ended the flow and we can delete the router object.
 
-There are 2 options of tracking changes in `viewControllers` array:
+There are 2 options for tracking changes in `viewControllers` array:
 1) Using `MainNavigationController.swift` with overriden naviagation methods.
 2) Using `UINavigationController+NavSwizzlingEx.swift` with swizzled navigation methods.
 The second option is a bit incomplete because you have to track assertions to `viewControllers` yourself e.g. add `didSet` in your subclass and post notification with updated controllers, so the first option is more preferable.
