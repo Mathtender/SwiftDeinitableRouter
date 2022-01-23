@@ -3,7 +3,7 @@ Easy-to-clean router.
 
 When we have an architecture which uses some kind of a router we can face a problem that when the flow ends in some way(we return user to the screen before the flow, user decides to leave the flow manualy, etc.) the router object hanging as a dead weight. Code in this repo can help deinit those router objects.
 
-General idea is save `weak` link on a controller(`anchorController`) that was in the stack before entering the flow, observe changes in `viewControllers` array in `UINavigationController` and then check wheather `anchorController` is `nil` or is equal to `viewControllers.last`, if so it means user has ended the flow and we can delete the router object. \
+General idea is save `weak` link on a controller(`anchorController`) that was in the stack before entering the flow, observe changes in `viewControllers` array in `UINavigationController` and then check wheather `anchorController` is `nil` or is equal to `viewControllers.last`, if so it means user has ended the flow and we can delete the router object.
 
 There are 2 options of tracking changes in `viewControllers` array:
 1) Using `MainNavigationController.swift` with overriden naviagation methods.
